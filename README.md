@@ -1,7 +1,7 @@
 # wpdevmanager
 By: Ale Vecchi, Austin Tindle
 
-wpdevmanager is a command-line utility that helps developing multiple sites at UCF College of Arts and humanities much easier.
+wpdevmanager is a command-line utility that makes developing multiple sites at UCF College of Arts and humanities much easier.
 (lord help me)
 
 ## How does it work?
