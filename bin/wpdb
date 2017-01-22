@@ -1,0 +1,31 @@
+#!/bin/bash
+source ~/.config/wpdevmanager/config
+
+function create {
+	echo -e "\ncreating wordpress site: $SITENAME at $SRVROOT"
+	ssh "$USER@$IP" bash -c "'
+		
+		cd $SRVROOT
+
+		echo "downloading Wordpress..."
+		wget https://wordpress.org/latest.tar.gz
+
+		echo "extracting..."
+		tar -xzf latest.tar.gz
+		rm latest.tar.gz
+
+		mysqladmin -uroot create "wordpress_$SITENAME"
+
+
+	
+	'"
+}
+
+while getopts "c:" opt; do
+  case $opt in
+    c)
+		SITENAME=$OPTARG
+    	create
+      	;;
+  esac
+done
