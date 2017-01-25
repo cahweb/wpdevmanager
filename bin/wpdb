@@ -21,21 +21,23 @@ function create {
 
 		exec wp core download | echo "configuring Wordpress..."
 		exec wp core config --dbhost=localhost --dbname="wordpress_$SITENAME" --dbuser="root" --dbpass="" | echo "running Wordpress install..."
-		exec wp core install --url=$IP/$SITENAME --title="$SITENAME" --admin_name=cahweb --admin_password=cahweb --admin_email=cahweb@gmail.com
-	'"
+		exec wp core install --url=$IP/$SITENAME --title="$SITENAME" --admin_name=cahweb --admin_password=cahweb --admin_email=cahweb@gmail.com | echo "fixing permissions..."
 
-	#ssh "$USER@$IP" 'exec wp core install --url=$IP/$SITENAME --title="$SITENAME" --admin_name=cahweb --admin_password=cahweb --admin_email=cahweb@gmail.com'
+		sudo -S chown http:webteam -R $SRVROOT/$SITENAME
+		sudo -S chmod 775 -R $SRVROOT/$SITENAME
+	'"
 }
 
 function remove {
 
-	ssh ssh "$USER@$IP" bash -c "'
+	ssh "$USER@$IP" bash -c "'
+		cd $SRVROOT
 		mysqladmin -uroot drop wordpress_$SITENAME && rm -r $SITENAME
-
 	'"
+	echo "done."
 }
 
-while getopts "c:r:" opt; do
+while getopts "c:r:l" opt; do
   case $opt in
     c)
 		SITENAME=$OPTARG
@@ -44,20 +46,21 @@ while getopts "c:r:" opt; do
     r)
 		SITENAME=$OPTARG
 
-		echo -n "are you sure you want to remove the Wordpress site: $SITENAME? (y/N): " 
+		echo -n "are you sure you want to remove the Wordpress site: $SITENAME? [y/N]: " 
 		read check
 
-		if [ ${check,,} == 'y' ]; then
-			echo "exiting..."
+		if [ "$check" = "y" ]; then
+			echo "deleting $SITENAME"
+			remove
 
-		else {
+		else 
 			echo "exiting..."
 			exit
-		}
 		fi
-
-    	remove
       	;;
+    l)
+		ssh "$USER@$IP" bash -c "'echo "Wordpress sites: " ; ls $SRVROOT'"
+		;;
 		
   esac
 done
