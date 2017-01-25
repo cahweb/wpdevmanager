@@ -2,7 +2,7 @@
 source ~/.config/wpdevmanager/config
 
 function create {
-	echo -e "\ncreating wordpress site: $SITENAME at $SRVROOT"
+	echo -e "creating wordpress site: $SITENAME at $SRVROOT"
 	ssh "$USER@$IP" bash -c "'
 		
 		cd $SRVROOT
@@ -26,6 +26,9 @@ function create {
 		sudo -S chown http:webteam -R $SRVROOT/$SITENAME
 		sudo -S chmod 775 -R $SRVROOT/$SITENAME
 	'"
+
+	echo "pulling Wordpress instance to $LOCROOT"...
+	scp -rq "$USER@$IP":/srv/http/$SITENAME $LOCROOT
 }
 
 function remove {
@@ -37,7 +40,7 @@ function remove {
 	echo "done."
 }
 
-while getopts "c:r:l" opt; do
+while getopts "c:r:lp:" opt; do
   case $opt in
     c)
 		SITENAME=$OPTARG
@@ -60,6 +63,10 @@ while getopts "c:r:l" opt; do
       	;;
     l)
 		ssh "$USER@$IP" bash -c "'echo "Wordpress sites: " ; ls $SRVROOT'"
+		;;
+	p)
+		SITENAME=$OPTARG
+		pull
 		;;
 		
   esac
