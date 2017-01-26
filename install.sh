@@ -30,7 +30,7 @@ fi
 echo -e "${YELLOW}please ensure to copy your ssh keys to the dev to simplify every transaction${NC}"
 
 echo "installing..."
-install -m 775 bin/* /usr/local/bin
+sudo install -m 775 bin/* /usr/local/bin
 
 echo -e "creating config file ~/.config/wpdevmanager/config"
 echo -e "USER=$user\nIP=$ip\nSRVROOT=$srvroot\nLOCROOT=$locroot" > ~/.config/wpdevmanager/config

@@ -21,15 +21,30 @@ function create {
 
 		exec wp core download | echo "configuring Wordpress..."
 		exec wp core config --dbhost=localhost --dbname="wordpress_$SITENAME" --dbuser="root" --dbpass="" | echo "running Wordpress install..."
-		exec wp core install --url=$IP/$SITENAME --title="$SITENAME" --admin_name=cahweb --admin_password=cahweb --admin_email=cahweb@gmail.com | echo "fixing permissions..."
+		exec wp core install --url=$IP/$SITENAME --title="$SITENAME" --admin_name=cahweb --admin_password=cahweb --admin_email=cahweb@gmail.com | echo ""
 
+		echo "fixing permissions..."
 		sudo -S chown http:webteam -R $SRVROOT/$SITENAME
 		sudo -S chmod 775 -R $SRVROOT/$SITENAME
+
+		mysqldump -u root wordpress_test > $SRVROOT/export.sql
 	'"
 
 	echo "pulling Wordpress instance to $LOCROOT"...
 	scp -rq "$USER@$IP":/srv/http/$SITENAME $LOCROOT
+	scp -q "$USER@$IP":/srv/http/export.sql $LOCROOT
+
+	mysqladmin -uroot -proot create "wordpress_$SITENAME"
+	echo "importing database..."
+	mysql -uroot -proot wordpress_test < $LOCROOT/export.sql
+
+	echo "configuring local instance of $SITENAME..."
+	cd $SRVROOT/$SITENAME
+	rm wp-config.php
+	exec wp core config --dbhost=localhost --dbname="wordpress_$SITENAME" --dbuser="root" --dbpass="root"
 }
+
+
 
 function remove {
 
