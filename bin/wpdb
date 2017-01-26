@@ -27,7 +27,7 @@ function create {
 		sudo -S chown http:webteam -R $SRVROOT/$SITENAME
 		sudo -S chmod 775 -R $SRVROOT/$SITENAME
 
-		mysqldump -u root wordpress_test > $SRVROOT/export.sql
+		mysqldump -u root wordpress_$SITENAME > $SRVROOT/export.sql
 	'"
 
 	echo "pulling Wordpress instance to $LOCROOT"...
@@ -36,7 +36,7 @@ function create {
 
 	mysqladmin -uroot -proot create "wordpress_$SITENAME"
 	echo "importing database..."
-	mysql -uroot -proot wordpress_test < $LOCROOT/export.sql
+	mysql -uroot -proot wordpress_$SITENAME < $LOCROOT/export.sql
 
 	echo "configuring local instance of $SITENAME..."
 	cd $SRVROOT/$SITENAME
